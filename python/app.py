@@ -3,6 +3,7 @@
 import time
 import random
 import json
+import re
 from urllib.request import urlopen
 from bs4 import BeautifulSoup
 
@@ -54,6 +55,8 @@ class InitFundId():
     def getRankList(self):
         # param
         '''
+        http://fundapi.eastmoney.com/fundtradenew.aspx?ft=zs&sc=3y&st=desc&pi=1&pn=100&cp=&ct=&cd=&ms=&fr=&plevel=&fst=&ftype=&fr1=&fl=0&isab=
+        http://fund.eastmoney.com/trade/zs.html
         指数基金前50（3个月）
         op:ph
         dt:kf
@@ -82,7 +85,8 @@ class InitFundId():
             'v': random.random()
         })
         content = urlopen(url).read()
-        print(repr(content[15:-1]))
+        match = re.search('\[(.*)\]', content)
+        print(match.group(1))
         # print(json.loads(repr(content[14:-1])))
         
 
