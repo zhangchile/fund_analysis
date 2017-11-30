@@ -48,8 +48,13 @@ class AnalysisFundComment():
         compareDate = time.strptime(date, '%Y-%m-%d')
         compareTs = time.mktime(compareDate)
         count = 0
+        readingCount = 0
+        ts = 0
         for comment in self.div:
+            if (comment.find_all('em', class_='settop')) : #跳过置顶的评论
+                continue
             commentDate = comment.contents[6].string[:5]
+            reading = comment.contents[1].string
             try:
                 tsGroup = time.strptime('2017-'+commentDate, '%Y-%m-%d')
                 ts = time.mktime(tsGroup)
@@ -58,14 +63,16 @@ class AnalysisFundComment():
                 print('date error, skip  :' + commentDate)
             if (ts == compareTs):
                 count+=1
+                readingCount+=int(reading)
         if (ts >= compareTs) :
             self.getNextPage()
-            print(commentDate)
-            print('id = '+repr(self.id)+'get next page = ' + repr(self.page))
-            if (self.page >=100):
-                return count
-            count += self.countComment()
-        return count
+            print(commentDate+' id = '+repr(self.id)+' get next page = ' + repr(self.page))
+            if (self.page >=50):
+                return {'ccount':count,'reading':readingCount}
+            dictCount = self.countComment()
+            count += dictCount['ccount']
+            readingCount += dictCount['reading']
+        return {'ccount':count,'reading':readingCount}
 
     def getCommentTitle(self):
         commentStr = []
@@ -81,7 +88,7 @@ class AnalysisFundComment():
 
 class AnalysisFundId():
     def __init__(self):
-        self.path = os.path.abspath('./funddata/ranklist_'+time.strftime('%Y-%m-%d')+'.json')
+        self.path = os.path.abspath('../public/funddata/ranklist_'+time.strftime('%Y-%m-%d')+'.json')
         
     def getIdList(self):
         content = []
@@ -191,27 +198,39 @@ class AnalysisFundId():
 idHandler = AnalysisFundId()
 # 暂存list
 ids = idHandler.getIdList()
+rankdict = idHandler.getRankList()
 print(len(ids))
 
 page = 1
-date = time.strftime('%Y-%m-%d')
+date = '2017-11-29' #time.strftime('%Y-%m-%d')
 fundID = 160222
+countPath = '../public/funddata/fundcount_'+date+'.json'
 # comment = AnalysisFundComment(fundID, date, page)
 # print(comment.countComment())
+if(os.path.isfile(countPath)):
+    cf = open(countPath)
+    idMap = json.load(cf)
+else:
+    comment = AnalysisFundComment()
+    idMap = []
+    # ids = [160222]
+    for id in ids:
+        # time.sleep(1)
+        comment.setConfig(id, date)
+        comment.sendRequest()
+        count = comment.countComment()
+        if (count['ccount'] > 30):
+            idMap.append({'id':id, 'name':rankdict[id], 'count':count['ccount'],'reading':count['reading']})
+        print('count fund name= '+rankdict[id]+' id='+ repr(id) + ' value='+repr(count))
 
-comment = AnalysisFundComment()
-idMap = []
-for id in ids:
-    # time.sleep(1)
-    comment.setConfig(id, date)
-    comment.sendRequest()
-    count = comment.countComment()
-    idMap.append({'id':id,'count':count})
-    print('count fund id='+ repr(id) + ' value='+repr(count))
+    path = os.path.abspath('../public/funddata/fundcount_'+date+'.json')
+    fp = open(path,'w+')
+    fp.write(json.dumps(idMap))
+    fp.close()
 
-path = os.path.abspath('./funddata/fundcount_'+date+'-ts_'+time.strftime('%Y-%m-%d_%H:%M:%S')+'.json')
-fp = open(path,'w+')
-fp.write(json.dumps(idMap))
-fp.close()
+    print('complete')
 
-print('complete')
+# 排序 dict
+for i in idMap:
+    print(i)
+    pass
