@@ -92,7 +92,25 @@ class AnalysisFundId():
                 'sc': 'z',
                 'pi': 1,
                 'pn': 100
-            }
+            },
+            {
+                'ft': 'gp',
+                'sc': '3y',
+                'pi': 1,
+                'pn': 100
+            },
+            {
+                'ft': 'gp',
+                'sc': 'y',
+                'pi': 1,
+                'pn': 100
+            },
+            {
+                'ft': 'gp',
+                'sc': 'z',
+                'pi': 1,
+                'pn': 100
+            },
         ]
         dictObj = {}
         for param in params:

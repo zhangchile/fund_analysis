@@ -39,9 +39,13 @@ class AnalysisFundComment():
             self.url = "http://guba.eastmoney.com/list,of{0}.html".format(id)
         else:
             self.url = "http://guba.eastmoney.com/list,of{0}_{1}.html".format(id, page)
-        self.content = urlopen(self.url)
-        self.soup = BeautifulSoup(self.content, 'lxml')
-        self.div = self.soup.select("div[class=articleh]")
+        try:
+            self.content = urlopen(self.url)
+            self.soup = BeautifulSoup(self.content, 'lxml')
+            self.div = self.soup.select("div[class=articleh]")
+        except Exception as err:
+            self.div = None
+            print('can\'t get content, request fail : code=' + repr(err.code) + ' msg:'+err.msg)
 
     def countComment(self,  date = ''):
         '''

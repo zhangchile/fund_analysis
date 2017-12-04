@@ -24,8 +24,8 @@ rankdict = idHandler.getRankList()
 print(len(ids))
 
 page = 1
-date = '2017-11-30' #time.strftime('%Y-%m-%d')
-fundID = 160222
+date = time.strftime('%Y-%m-%d')
+# fundID = 160222
 countPath = '../public/funddata/fundcount_'+date+'.json'
 # comment = AnalysisFundComment(fundID, date, page)
 # print(comment.countComment())
