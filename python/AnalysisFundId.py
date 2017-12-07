@@ -123,8 +123,8 @@ class AnalysisFundId():
                 item = fund.split('|')
                 dictObj[item[0]] = item[1]+'|'+item[2]+'|'+param['ft']
             time.sleep(1)
-        fp = open(self.path, 'w+')
-        fp.write(json.dumps(dictObj))
-        fp.close()
+        with open(self.path, 'w+') as fp:
+            fp.write(json.dumps(dictObj))
+
         return dictObj
         

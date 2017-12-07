@@ -6,16 +6,17 @@
     <link href="./css/c3.min.css" rel="stylesheet">
     <link href="./bootstrap/css/bootstrap.min.css" rel="stylesheet" media="screen">
     <link href="./css/bootstrap-datetimepicker.min.css" rel="stylesheet" media="screen">
-    
+    <link href="./css/jqcloud.css" rel="stylesheet" >
 
     <!-- Load d3.js and c3.js -->
     <script src="./js/d3.v3.min.js" charset="utf-8"></script>
     <script src="./js/c3.min.js"></script>
-    <script type="text/javascript" src="./js/jquery-1.8.3.min.js" charset="UTF-8"></script>
+    <script src="./js/jquery-1.8.3.min.js" type="text/javascript"  charset="UTF-8"></script>
     <script src="./js/datetimepicker.min.js"></script>
-    <script type="text/javascript" src="./bootstrap/js/bootstrap.min.js"></script>
-    <script type="text/javascript" src="./js/locales/bootstrap-datetimepicker.zh-CN.js" charset="UTF-8"></script>
-    
+    <script src="./bootstrap/js/bootstrap.min.js" type="text/javascript" ></script>
+    <script src="./js/locales/bootstrap-datetimepicker.zh-CN.js" type="text/javascript" charset="UTF-8"></script>
+    <script src="./js/jqcloud-1.0.4.min.js" type="text/javascript" charset="UTF-8"></script>
+
 </head>
 <body>
     <div class="container">
@@ -30,14 +31,18 @@
         <div class="row">
             <div id="chart" style="max-width:1100px;min-height:600px"></div>
         </div>
+
+        <section class="tag-cloud">
+            <div id="tag" style="width: 500px; height: 450px;"></div>
+        </section>
     </div>
 
 </body>
-
 <script>
 $(document).ready(function () {
     var data = [];
     var chart = null;
+    var currFundId = null;
     var chartOpt = {
         bindto: '#chart',
         data: {
@@ -65,7 +70,8 @@ $(document).ready(function () {
             onclick: function (d, element) {
                 var id = data[d.index].id
                 var url = 'http://fund.eastmoney.com/'+id+'.html'
-                window.open(url)
+                // window.open(url)
+                loadTagCloud(id);
             },
             selection: {
                 enabled: true
@@ -137,6 +143,16 @@ $(document).ready(function () {
         chartOpt.data.json = data
         chart = c3.generate(chartOpt)
     })
+
+    var loadTagCloud = function (id) {
+        $.get('./funddata/tagcloud/'+getDate()+'/'+id+'.json', function (res) {
+            $("#tag").children().remove();
+            var ps = JSON.parse(res);
+            $("#tag").jQCloud(ps);
+        })
+
+    }
+
 })
 </script>
 </html>

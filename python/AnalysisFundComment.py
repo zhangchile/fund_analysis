@@ -1,4 +1,8 @@
 import time
+import jieba
+import os
+import json
+import urllib.request
 from bs4 import BeautifulSoup
 from urllib.request import urlopen
 
@@ -14,6 +18,8 @@ class AnalysisFundComment():
         if (date == ''):
             self.date = time.strftime('%Y-%m-%d')
         self.div = None
+        self.commentList = []
+        self.wordDict = {}
 
     def setConfig(self, id, date, page=1):
         """
@@ -24,6 +30,11 @@ class AnalysisFundComment():
         self.id = id
         self.date = date
         self.page = page
+
+    def initCookie(self):
+        host = 'http://guba.eastmoney.com/'
+        rq = urlopen(host, headers={'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/62.0.3202.94 Safari/537.36'})
+
 
     def sendRequest(self):
         '''
@@ -40,12 +51,17 @@ class AnalysisFundComment():
         else:
             self.url = "http://guba.eastmoney.com/list,of{0}_{1}.html".format(id, page)
         try:
-            self.content = urlopen(self.url)
+            headerDict = {
+                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/62.0.3202.94 Safari/537.36'
+            }
+            rqObj = urllib.request.Request(self.url, headers=headerDict)
+
+            self.content = urlopen(rqObj)
             self.soup = BeautifulSoup(self.content, 'lxml')
             self.div = self.soup.select("div[class=articleh]")
         except Exception as err:
             self.div = None
-            print('can\'t get content, request fail : code=' + repr(err.code) + ' msg:'+err.msg)
+            print('can\'t get content, request fail : code=' + repr(err))
 
     def countComment(self,  date = ''):
         '''
@@ -61,23 +77,29 @@ class AnalysisFundComment():
         readingCount = 0
         ts = 0
         for comment in self.div:
-            if (comment.find_all('em', class_='settop')) : #跳过置顶的评论
+            if comment.find_all('em', class_='settop') : #跳过置顶的评论
                 continue
-            commentDate = comment.contents[6].string[:5]
-            reading = comment.contents[1].string
+            elif comment.find_all('em', class_='hinfo') : #跳过公告
+                continue
             try:
-                tsGroup = time.strptime('2017-'+commentDate, '%Y-%m-%d')
+                commentDate = comment.contents[6].string[:5]
+                reading = comment.contents[1].string
+                commentTitle = comment.contents[3].string
+                if (commentTitle!=None):
+                    self.commentList.append(commentTitle)
+                year = time.strftime('%Y')
+                tsGroup = time.strptime(year+'-'+commentDate, '%Y-%m-%d')
                 ts = time.mktime(tsGroup)
-            except Exception :
+            except Exception as err:
                 ts = compareTs - 1000
-                print('date error, skip  :' + commentDate)
+                print('parse error, skip !!!' )
             if (ts == compareTs):
                 count+=1
                 readingCount+=int(reading)
         if (ts >= compareTs) :
             self.getNextPage()
             print(commentDate+' id = '+repr(self.id)+' get next page = ' + repr(self.page))
-            if (self.page >=50):
+            if (self.page >= 50):
                 return {'ccount':count,'reading':readingCount}
             dictCount = self.countComment()
             count += dictCount['ccount']
@@ -87,7 +109,8 @@ class AnalysisFundComment():
     def getCommentTitle(self):
         commentStr = []
         for comment in self.div:
-            commentDate = '2017-'+comment.contents[6].string[:5]
+            year = time.strftime('%Y')
+            commentDate = year+'-'+comment.contents[6].string[:5]
             child = comment.a.string
             commentStr.append({'date':commentDate, 'title': child})
         return commentStr
@@ -98,3 +121,53 @@ class AnalysisFundComment():
         '''
         self.page += 1
         self.sendRequest()
+
+    def clearComment(self):
+        '''
+        清除评论数据
+        '''
+        self.commentList = []
+        self.wordDict = {}
+
+    def divideWord(self):
+        '''
+        分词统计
+        '''
+        print('analysis word')
+        for c in self.commentList:
+            clist = jieba.lcut(c, cut_all=False)
+            print(c +' => '+repr(clist))
+            for w in clist:
+                if w in self.wordDict:
+                    self.wordDict[w] += 1
+                else:
+                    self.wordDict[w] = 1
+        formatList = self.formatWord()
+        # save to file
+        basePath = os.path.abspath('../public/funddata/tagcloud/'+self.date)
+        if os.path.isdir(basePath) != True:
+            os.mkdir(basePath)
+        savePath = os.path.abspath(basePath+'/'+self.id+'.json')
+        with open(savePath, 'w+') as fp:
+            fp.write(json.dumps(formatList))
+        return formatList
+
+    def formatWord(self):
+        '''
+        格式化分词dict到合适的前端格式
+        return List
+        '''
+        formatList = []
+        ignoreWord = [
+            "你","我","他","的","是","你们","我们","他们","大家","人",
+            "，","了","?","？","。","!","！",",","、",",",
+            "不","啊","呢","么","吗","吧"," "
+        ]
+        for w in self.wordDict:
+            if w in ignoreWord:
+                continue
+            elif self.wordDict[w] <= 1: #过滤低频字词
+                continue
+            formatList.append({"text": w, "weight": self.wordDict[w]})
+        
+        return formatList

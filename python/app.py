@@ -29,21 +29,25 @@ date = time.strftime('%Y-%m-%d')
 countPath = '../public/funddata/fundcount_'+date+'.json'
 # comment = AnalysisFundComment(fundID, date, page)
 # print(comment.countComment())
-if(os.path.isfile(countPath)):
+if(os.path.isfile(countPath)==''):
     cf = open(countPath)
     idMap = json.load(cf)
 else:
     comment = AnalysisFundComment()
     idMap = []
-    # ids = [160222]
+    # ids = ['161725']#['161725']
     for id in ids:
         # time.sleep(1)
+        print(id, date)
         comment.setConfig(id, date)
         comment.sendRequest()
         count = comment.countComment()
         if (count['ccount'] > 30):
             idMap.append({'id':id, 'name':rankdict[id], 'count':count['ccount'],'reading':count['reading']})
+            #分析评论
+            comment.divideWord()
         print('count fund name= '+rankdict[id]+' id='+ repr(id) + ' value='+repr(count))
+        comment.clearComment()
 
     path = os.path.abspath('../public/funddata/fundcount_'+date+'.json')
     fp = open(path,'w+')
@@ -52,7 +56,3 @@ else:
 
     print('complete')
 
-# 排序 dict
-for i in idMap:
-    print(i)
-    pass
