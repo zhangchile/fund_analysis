@@ -65,9 +65,6 @@ $(document).ready(function () {
                 count: 'bar',
                 reading: 'line'
             },
-            onmouseover: function (d) {
-                console.log(data[d.index])
-            },
             onclick: function (d, element) {
                 var id = data[d.index].id
                 var url = 'http://fund.eastmoney.com/'+id+'.html'
@@ -120,7 +117,6 @@ $(document).ready(function () {
         minView:2,
         pickerPosition: "bottom-left"
     }).on('changeDate', function (ev) {
-        console.log(getDate(ev.date))
         selectDate = getDate(ev.date)
         $.getJSON('./funddata/fundcount_'+selectDate+'.json', function (res) {
             data = res
