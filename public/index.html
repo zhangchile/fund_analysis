@@ -146,6 +146,7 @@ $(document).ready(function () {
     })
 
     var loadTagCloud = function (id) {
+        if (selectDate == null) selectDate = getDate();
         $.getJSON('./funddata/tagcloud/'+selectDate+'/'+id+'.json', function (res) {
             $("#tag").children().remove();
             $("#tag").jQCloud(res);
