@@ -2,6 +2,7 @@ import time
 import jieba
 import os
 import json
+import random
 import urllib.request
 from bs4 import BeautifulSoup
 from urllib.request import urlopen
@@ -59,6 +60,9 @@ class AnalysisFundComment():
             self.content = urlopen(rqObj)
             self.soup = BeautifulSoup(self.content, 'lxml')
             self.div = self.soup.select("div[class=articleh]")
+            rt = random.random() * 5
+            time.sleep(rt)
+
         except Exception as err:
             self.div = None
             print('can\'t get content, request fail : code=' + repr(err))

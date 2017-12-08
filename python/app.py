@@ -4,18 +4,15 @@ import time
 import json
 import re
 import os.path
+import random
 from AnalysisFundComment import *
 from AnalysisFundId import *
 
-# fundID = 160222
-# page = 1
-# date = '2017-11-28'
-
-# comment = AnalysisFundComment(fundID, date, page)
-# print(comment.getCommentTitle())
-
-# comment.getNextPage()
-# print(comment.getCommentTitle())
+# 判断时间 0点到9点不访问
+hour = int(time.strftime('%H'))
+if hour < 10:
+    print('hour = ' + str(hour) + ' < 10, system exit')
+    exit(0)
 
 idHandler = AnalysisFundId()
 # 暂存list
@@ -37,7 +34,7 @@ else:
     idMap = []
     # ids = ['161725']#['161725']
     for id in ids:
-        # time.sleep(1)
+
         print(id, date)
         comment.setConfig(id, date)
         comment.sendRequest()
@@ -48,6 +45,9 @@ else:
             comment.divideWord()
         print('count fund name= '+rankdict[id]+' id='+ repr(id) + ' value='+repr(count))
         comment.clearComment()
+
+        rtime = random.random() * 6
+        time.sleep(rtime)
 
     path = os.path.abspath('../public/funddata/fundcount_'+date+'.json')
     fp = open(path,'w+')
