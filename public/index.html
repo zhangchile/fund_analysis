@@ -43,6 +43,7 @@ $(document).ready(function () {
     var data = [];
     var chart = null;
     var currFundId = null;
+    var selectDate = null;
     var chartOpt = {
         bindto: '#chart',
         data: {
@@ -65,7 +66,7 @@ $(document).ready(function () {
                 reading: 'line'
             },
             onmouseover: function (d) {
-                console.log(data[d.index].id)
+                console.log(data[d.index])
             },
             onclick: function (d, element) {
                 var id = data[d.index].id
@@ -121,14 +122,14 @@ $(document).ready(function () {
     }).on('changeDate', function (ev) {
         console.log(getDate(ev.date))
         selectDate = getDate(ev.date)
-        $.get('./funddata/fundcount_'+selectDate+'.json', function (res) {
-            data = JSON.parse(res)
+        $.getJSON('./funddata/fundcount_'+selectDate+'.json', function (res) {
+            data = res
             if (chart == null) {
-                chartOpt.data.json = data
+                chartOpt.data.json = res
                 chart = c3.generate(chartOpt)
             } else {
                 chart.load({
-                    json: data,
+                    json: res,
                     keys: {
                         x: 'name',
                         value:['count','reading']
@@ -138,17 +139,16 @@ $(document).ready(function () {
         })
     })
 
-    $.get('./funddata/fundcount_'+getDate()+'.json', function (res) {
-        data = JSON.parse(res)
-        chartOpt.data.json = data
+    $.getJSON('./funddata/fundcount_'+getDate()+'.json', function (res) {
+        data = res
+        chartOpt.data.json = res
         chart = c3.generate(chartOpt)
     })
 
     var loadTagCloud = function (id) {
-        $.get('./funddata/tagcloud/'+getDate()+'/'+id+'.json', function (res) {
+        $.getJSON('./funddata/tagcloud/'+selectDate+'/'+id+'.json', function (res) {
             $("#tag").children().remove();
-            var ps = JSON.parse(res);
-            $("#tag").jQCloud(ps);
+            $("#tag").jQCloud(res);
         })
 
     }
