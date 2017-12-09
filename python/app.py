@@ -48,7 +48,7 @@ else:
             idMap.append({'id':id, 'name':rankdict[id], 'count':count['ccount'],'reading':count['reading']})
             #分析评论
             comment.divideWord()
-        print('count fund name= '+rankdict[id]+' id='+ repr(id) + ' value='+repr(count))
+        print(time.strftime('%Y-%m-%d %H:%M:%S') + ' count fund name= '+rankdict[id]+' value='+repr(count))
         comment.clearComment()
 
         rtime = random.random() * 6
