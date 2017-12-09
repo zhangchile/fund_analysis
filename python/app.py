@@ -16,7 +16,8 @@ if hour < 10:
 
 #当前文件路径,并切换
 dir = os.path.dirname(__file__)
-os.chdir(dir)
+if dir != '':
+    os.chdir(dir)
 
 idHandler = AnalysisFundId()
 # 暂存list

@@ -140,7 +140,7 @@ class AnalysisFundComment():
         print('analysis word')
         for c in self.commentList:
             clist = jieba.lcut(c, cut_all=False)
-            print(c +' => '+repr(clist))
+            # print(c +' => '+repr(clist))
             for w in clist:
                 if w in self.wordDict:
                     self.wordDict[w] += 1
