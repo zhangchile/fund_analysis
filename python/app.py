@@ -14,6 +14,10 @@ if hour < 10:
     print('hour = ' + str(hour) + ' < 10, system exit')
     exit(0)
 
+#当前文件路径,并切换
+dir = os.path.dirname(__file__)
+os.chdir(dir)
+
 idHandler = AnalysisFundId()
 # 暂存list
 ids = idHandler.getIdList()
