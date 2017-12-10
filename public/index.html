@@ -66,12 +66,6 @@ $(document).ready(function () {
                 count: 'bar',
                 reading: 'line'
             },
-            onclick: function (d, element) {
-                var id = data[d.index].id
-                var url = 'http://fund.eastmoney.com/'+id+'.html'
-                // window.open(url)
-                loadTagCloud(id);
-            },
             selection: {
                 enabled: true
             }
@@ -143,6 +137,7 @@ $(document).ready(function () {
     })
 
     var loadTagCloud = function (id) {
+        // alert(id)
         if (selectDate == null) selectDate = getDate();
         $.getJSON('./funddata/tagcloud/'+selectDate+'/'+id+'.json', function (res) {
             $("#tag").children().remove();
@@ -150,6 +145,13 @@ $(document).ready(function () {
         })
 
     }
+
+    $("#chart").click(function (e) {
+        if (e.target.__data__) {
+            var i = e.target.__data__.index
+            loadTagCloud(data[i].id)
+        }
+    })
 
 })
 </script>
