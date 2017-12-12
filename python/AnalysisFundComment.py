@@ -25,10 +25,8 @@ class AnalysisFundComment():
     def _getHeader(self):
         return {
             'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/62.0.3202.94 Safari/537.36',
-            'Host':'fund.eastmoney.com',
             'Accept':'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8',
-            'Accept-Encoding':'gzip, deflate',
-            'Accept-Language':'zh-CN,zh;q=0.9,en;q=0.8,zh-TW;q=0.7'
+            'Accept-Language':'zh-CN,zh;q=0.9,en;q=0.8,zh-TW;q=0.7',
         }
 
     def setConfig(self, id, date, page=1):
@@ -63,7 +61,6 @@ class AnalysisFundComment():
         try:
             headerDict = self._getHeader()
             rqObj = urllib.request.Request(self.url, headers=headerDict)
-
             self.content = urlopen(rqObj)
             self.soup = BeautifulSoup(self.content, 'lxml')
             self.div = self.soup.select("div[class=articleh]")
