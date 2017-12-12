@@ -22,6 +22,15 @@ class AnalysisFundComment():
         self.commentList = []
         self.wordDict = {}
 
+    def _getHeader(self):
+        return {
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/62.0.3202.94 Safari/537.36',
+            'Host':'fund.eastmoney.com',
+            'Accept':'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8',
+            'Accept-Encoding':'gzip, deflate',
+            'Accept-Language':'zh-CN,zh;q=0.9,en;q=0.8,zh-TW;q=0.7'
+        }
+
     def setConfig(self, id, date, page=1):
         """
         id: int 基金id
@@ -34,15 +43,8 @@ class AnalysisFundComment():
 
     def initCookie(self):
         host = 'http://guba.eastmoney.com/'
-        headerDict = {
-            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/62.0.3202.94 Safari/537.36',
-            'Host':'fund.eastmoney.com',
-            'Accept':'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8',
-            'Accept-Encoding':'gzip, deflate',
-            'Accept-Language':'zh-CN,zh;q=0.9,en;q=0.8,zh-TW;q=0.7'
-        }
+        headerDict = self._getHeader()
         rq = urlopen(host, headers=headerDict)
-
 
     def sendRequest(self):
         '''
@@ -59,9 +61,7 @@ class AnalysisFundComment():
         else:
             self.url = "http://guba.eastmoney.com/list,of{0}_{1}.html".format(id, page)
         try:
-            headerDict = {
-                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/62.0.3202.94 Safari/537.36'
-            }
+            headerDict = self._getHeader()
             rqObj = urllib.request.Request(self.url, headers=headerDict)
 
             self.content = urlopen(rqObj)
