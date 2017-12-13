@@ -64,7 +64,7 @@ class AnalysisFundComment():
             self.content = urlopen(rqObj)
             self.soup = BeautifulSoup(self.content, 'lxml')
             self.div = self.soup.select("div[class=articleh]")
-            rt = random.random() * 5
+            rt = random.random() * 3
             time.sleep(rt)
 
         except Exception as err:
