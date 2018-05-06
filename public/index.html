@@ -18,6 +18,7 @@
     <script src="./js/jqcloud-1.0.4.min.js" type="text/javascript" charset="UTF-8"></script>
     <!-- 最新的 Bootstrap 核心 JavaScript 文件 -->
     <script src="http://cdn.bootcss.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+    <script scr="./js/jquery.mobile.custom.min.js"></script>
 </head>
 <body>
     <div class="container">
@@ -146,12 +147,31 @@ $(document).ready(function () {
 
     }
 
-    $("#chart").click(function (e) {
-        if (e.target.__data__) {
-            var i = e.target.__data__.index
-            loadTagCloud(data[i].id)
-        }
-    })
+    // 判断浏览器是否是移动端
+    function isMobile() {
+        return navigator.userAgent.match(/(iphone|ipad|ipod|ios|android|mobile|blackberry|iemobile|mqqbrowser|juc|fennec|wosbrowser|browserng|Webos|symbian|windows phone)/i);
+    }
+
+    if (isMobile()) {
+        $("#chart").on('touchend', function (e) {
+            console.log(e)
+            if (e.target.__data__) {
+                var i = e.target.__data__.index
+                loadTagCloud(data[i].id)
+                chart.select(['count','reading'], [i], true)
+            }
+            // e.preventDefault();
+        });
+
+    } else {
+        $("#chart").on('click',function (e) {
+            if (e.target.__data__) {
+                var i = e.target.__data__.index
+                chart.select(['count','reading'], [i], true)
+                loadTagCloud(data[i].id)
+            }
+        })
+    }
 
 })
 </script>

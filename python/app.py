@@ -51,7 +51,7 @@ else:
         print(time.strftime('%Y-%m-%d %H:%M:%S') + ' count fund name= '+rankdict[id]+' value='+repr(count))
         comment.clearComment()
 
-        rtime = random.random() * 6
+        rtime = random.random() * 5
         time.sleep(rtime)
 
     path = os.path.abspath('../public/funddata/fundcount_'+date+'.json')
