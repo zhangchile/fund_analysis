@@ -1,5 +1,5 @@
 # this is app entry 
-
+# coding=utf-8
 import time
 import json
 import re
