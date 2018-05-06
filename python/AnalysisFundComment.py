@@ -1,3 +1,4 @@
+# coding=utf-8
 import time
 import jieba
 import os
@@ -100,7 +101,7 @@ class AnalysisFundComment():
             if (ts == compareTs):
                 count+=1
                 readingCount+=int(reading)
-        if (ts >= compareTs) :
+        if ts == compareTs :
             self.getNextPage()
             print(commentDate+' id = '+repr(self.id)+' get next page = ' + repr(self.page))
             if (self.page >= 50):
